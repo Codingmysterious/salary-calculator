@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Futuristic Salary Calculator | Bishal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+      flex-direction: column;
+    }
+
+    .calculator-container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .input-panel, .result-panel {
+      flex: 1 1 300px;
+      padding: 2rem;
+    }
+
+    .input-panel {
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      font-size: 1.8rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 300;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+    }
+
+    input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .results p {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    .results span {
+      font-weight: 600;
+      color: #00ffc6;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-align: center;
+    }
+
+    .dark-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .dark-toggle:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    @media (max-width: 768px) {
+      .input-panel {
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark/Light</button>
+
+  <div class="calculator-container">
+    <div class="input-panel">
+      <h2>Salary Input</h2>
+      <label for="salary">Monthly Salary Amount (₹)</label>
+      <input type="number" id="salary" placeholder="e.g. 50000" />
+
+      <label for="hours">Total Duty Hours per Day</label>
+      <input type="number" id="hours" placeholder="e.g. 8" />
+
+      <label for="days">Working Days in the Month</label>
+      <input type="number" id="days" placeholder="e.g. 22" />
+
+      <label for="deductions">Basic Deductions (Optional)</label>
+      <input type="number" id="deductions" placeholder="e.g. 2000 (optional)" />
+
+      <label for="home">Home Rent</label>
+      <input type="number" id="home" placeholder="e.g. 8000" />
+
+      <label for="food">Food Expenses</label>
+      <input type="number" id="food" placeholder="e.g. 3000" />
+
+      <label for="health">Healthcare</label>
+      <input type="number" id="health" placeholder="e.g. 1500" />
+
+      <label for="skin">Skin Care</label>
+      <input type="number" id="skin" placeholder="e.g. 1000" />
+
+      <label for="outside">Outside Food</label>
+      <input type="number" id="outside" placeholder="e.g. 2000" />
+
+      <label for="additional">Additional Expenses</label>
+      <input type="number" id="additional" placeholder="e.g. 2500" />
+    </div>
+
+    <div class="result-panel">
+      <h2>Results</h2>
+      <div class="results">
+        <p>Final Salary (after base deduction): <span id="final-salary">₹0.00</span></p>
+        <p>Per Hour: <span id="per-hour">₹0.00</span></p>
+        <p>Per Minute: <span id="per-minute">₹0.00</span></p>
+        <p>Per Second: <span id="per-second">₹0.00</span></p>
+        <hr style="margin: 1rem 0; border: 1px solid rgba(255,255,255,0.1)">
+        <p>Total Spent: <span id="total-spent">₹0.00</span></p>
+        <p>Remaining Salary: <span id="remaining">₹0.00</span></p>
+        <p>Savings Percentage: <span id="saving-percent">0%</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">© 2025 Bishal. All Rights Reserved. Designed & Developed by Bishal.</div>
+
+  <script>
+    const inputs = document.querySelectorAll('input');
+
+    inputs.forEach(input => {
+      input.addEventListener('input', calculateSalary);
+    });
+
+    function formatCurrency(value) {
+      return `₹${parseFloat(value).toFixed(2)}`;
+    }
+
+    function calculateSalary() {
+      const salary = parseFloat(document.getElementById('salary').value) || 0;
+      const hours = parseFloat(document.getElementById('hours').value) || 0;
+      const days = parseFloat(document.getElementById('days').value) || 0;
+      const deductions = parseFloat(document.getElementById('deductions').value) || 0;
+
+      const home = parseFloat(document.getElementById('home').value) || 0;
+      const food = parseFloat(document.getElementById('food').value) || 0;
+      const health = parseFloat(document.getElementById('health').value) || 0;
+      const skin = parseFloat(document.getElementById('skin').value) || 0;
+      const outside = parseFloat(document.getElementById('outside').value) || 0;
+      const additional = parseFloat(document.getElementById('additional').value) || 0;
+
+      const finalSalary = salary - deductions;
+      const totalHours = hours * days;
+      const perHour = finalSalary / totalHours;
+      const perMinute = perHour / 60;
+      const perSecond = perMinute / 60;
+
+      const totalSpent = home + food + health + skin + outside + additional;
+      const remaining = finalSalary - totalSpent;
+      const savingPercent = finalSalary > 0 ? (remaining / finalSalary) * 100 : 0;
+
+      document.getElementById('final-salary').innerText = formatCurrency(finalSalary);
+      document.getElementById('per-hour').innerText = formatCurrency(perHour);
+      document.getElementById('per-minute').innerText = formatCurrency(perMinute);
+      document.getElementById('per-second').innerText = formatCurrency(perSecond);
+      document.getElementById('total-spent').innerText = formatCurrency(totalSpent);
+      document.getElementById('remaining').innerText = formatCurrency(remaining);
+      document.getElementById('saving-percent').innerText = `${savingPercent.toFixed(2)}%`;
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const current = getComputedStyle(body).backgroundImage;
+      if (current.includes("2c5364")) {
+        body.style.background = "linear-gradient(135deg, #ffffff, #e6e6e6)";
+        document.querySelectorAll('*').forEach(el => el.style.color = '#000');
+      } else {
+        location.reload();
+      }
+    }
+  </script>
+</body>
+</html>
